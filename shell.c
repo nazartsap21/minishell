@@ -1,5 +1,6 @@
 #include "shell.h"
 #include "parser.h"
+#include "executor.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,12 +30,7 @@ void start_shell(void)
     command = GetParserCommand();
     args = GetParserArgs(&arg_count);
 
-    printf("Command from parser: %s\n", command ? command : "None");
-
-    for (int i = 0; i < arg_count; i++)
-    {
-      printf("Argument %d from parser: %s\n", i + 1, args[i] ? args[i] : "None");
-    }
+    ExecuteCommand(command, args, arg_count);
 
     free(command);
     for (int i = 0; i < arg_count; i++)
