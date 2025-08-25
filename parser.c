@@ -6,6 +6,7 @@
 
 Parser_t parser = 
 {
+  .bitmap = 0,
   .args = {NULL},
   .arg_count = 0
 };
@@ -16,20 +17,59 @@ void Parse(char* input)
   if (input == NULL)
     return;
 
-  if (parser.args[0])
-    CleanParser();
+  parser.arg_count = 0;
+  parser.bitmap = 0;
 
-  char* token = strtok(input, " \n\t");
-
-  while (token != NULL)
+  char* p = input;
+  while (*p != '\0')
   {
-    if (*token != '\0' && parser.arg_count < MAX_ARGS)
+    while (*p == ' ' || *p == '\t' || *p == '\n') p++;
+      if (*p == '\0') break;
+
+    char* start = p;
+    char* arg = NULL;
+    size_t len = 0;
+
+    if (*p == '"')
     {
-      parser.args[parser.arg_count++] = token;
+      p++;
+      start = p;
+      while (*p && *p != '"') p++;
+      len = p - start;
+      arg = (char*)malloc(len + 1);
+      if (arg)
+      {
+        strncpy(arg, start, len);
+        arg[len] = '\0';
+      }
+      if (*p == '"') p++;
+    }
+    else
+    {
+      start = p;
+      while (*p && *p != ' ' && *p != '\t' && *p != '\n' && *p != '"') p++;
+      len = p - start;
+      arg = (char*)malloc(len + 1);
+      if (arg)
+      {
+        strncpy(arg, start, len);
+        arg[len] = '\0';
+      }
     }
 
-    token = strtok(NULL, " \n\t");  
+    if (arg && parser.arg_count < MAX_ARGS)
+    {
+      parser.args[parser.arg_count++] = arg;
+    }
+    else if (arg)
+    {
+      free(arg);
+    }
+
+    if (*p == '"') p++;
   }
+  if (parser.arg_count < MAX_ARGS)
+    parser.args[parser.arg_count] = NULL;
 }
 
 
@@ -42,7 +82,8 @@ void CleanParser(void)
 
   parser.args[0] = NULL;
   parser.arg_count = 0;
-} 
+  parser.bitmap = 0;
+}
 
 
 char** GetParserArgs(int* arg_count)

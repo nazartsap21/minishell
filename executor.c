@@ -18,6 +18,7 @@ void ExecuteCommand(char* command, char** args, int arg_count)
     perror("fork failed");
     return;
   }
+
   if (pid == 0)
   {
     execvp(command, args);

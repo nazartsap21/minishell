@@ -1,14 +1,16 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <stdint.h>
 
 #define MAX_ARGS 10
 
 
 typedef struct
 {
-  char* args[MAX_ARGS];
-  int arg_count;
+  uint8_t bitmap;
+  char*   args[MAX_ARGS];
+  int     arg_count;
 } Parser_t;
 
 
