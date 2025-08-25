@@ -28,7 +28,10 @@ void start_shell(void)
 
     args = GetParserArgs(&arg_count);
 
-    ExecuteCommand(args[0], args, arg_count);
+    if (arg_count > 0)
+    {
+      ExecuteCommand(args[0], args, arg_count);
+    }
 
     for (int i = 0; i < arg_count; i++)
     {

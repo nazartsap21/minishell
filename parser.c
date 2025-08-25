@@ -7,13 +7,17 @@
 Parser_t parser = 
 {
   .args = {NULL},
-  .arg_count = 1
+  .arg_count = 0
 };
 
 
 void Parse(char* input)
 {
-  CleanParser();
+  if (input == NULL)
+    return;
+
+  if (parser.args[0])
+    CleanParser();
 
   char* token = strtok(input, " \n");
 
