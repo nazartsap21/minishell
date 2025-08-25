@@ -19,7 +19,7 @@ void Parse(char* input)
   if (parser.args[0])
     CleanParser();
 
-  char* token = strtok(input, " \n");
+  char* token = strtok(input, " \n\t");
 
   while (token != NULL)
   {
@@ -28,7 +28,7 @@ void Parse(char* input)
       parser.args[parser.arg_count++] = token;
     }
 
-    token = strtok(NULL, " \n");  
+    token = strtok(NULL, " \n\t");  
   }
 }
 
@@ -54,7 +54,7 @@ char** GetParserArgs(int* arg_count)
   if (parser.arg_count == 0)
     return NULL;
 
-  char** args_copy = malloc(sizeof(char*) * parser.arg_count);
+  char** args_copy = malloc(sizeof(char*) * (parser.arg_count + 1));
   if (!args_copy)
     return NULL;
 
@@ -62,5 +62,8 @@ char** GetParserArgs(int* arg_count)
   {
     args_copy[i] = strdup(parser.args[i]);
   }
+
+  args_copy[parser.arg_count] = NULL;
+
   return args_copy;
 }
