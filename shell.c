@@ -1,6 +1,7 @@
 #include "shell.h"
 #include "parser.h"
 #include "executor.h"
+#include "expander.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,7 @@ void start_shell(void)
     Parse(input);
 
     args = GetParserArgs(&arg_count);
+    ExpandVariables(args, arg_count);
 
     if (arg_count > 0)
     {

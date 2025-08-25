@@ -1,7 +1,7 @@
 minishell: main_minishell
 
-main_minishell: main.o parser.o shell.o executor.o
-	gcc main.o parser.o shell.o executor.o -o minishell.exe
+main_minishell: main.o parser.o shell.o executor.o expander.o
+	gcc main.o parser.o shell.o executor.o expander.o -o minishell.exe
 
 main.o: main.c main.h shell.h
 	gcc main.c -c -o main.o
@@ -14,6 +14,9 @@ shell.o: shell.c shell.h parser.h
 
 executor.o: executor.c executor.h
 	gcc executor.c -c -o executor.o
+
+expander.o: expander.c expander.h
+	gcc expander.c -c -o expander.o
 
 clean:
 	rm -f *.o *.exe
