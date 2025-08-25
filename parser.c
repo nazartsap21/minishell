@@ -6,9 +6,8 @@
 
 Parser_t parser = 
 {
-  .command = NULL,
   .args = {NULL},
-  .arg_count = 0
+  .arg_count = 1
 };
 
 
@@ -22,17 +21,10 @@ void Parse(char* input)
   {
     if (*token != '\0' && parser.arg_count < MAX_ARGS)
     {
-      if (parser.command == NULL)
-      {
-        parser.command = token;
-      }
-      else
-      {
-        parser.args[parser.arg_count++] = token;
-      }
+      parser.args[parser.arg_count++] = token;
     }
 
-    token = strtok(NULL, " \n");
+    token = strtok(NULL, " \n");  
   }
 }
 
@@ -44,18 +36,10 @@ void CleanParser(void)
     parser.args[i] = NULL;
   }
 
-  parser.command = NULL;
+  parser.args[0] = NULL;
   parser.arg_count = 0;
 } 
 
-
-char* GetParserCommand(void)
-{
-  if (parser.command == NULL)
-    return NULL;
-
-  return strdup(parser.command);
-}
 
 char** GetParserArgs(int* arg_count)
 {

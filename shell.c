@@ -10,7 +10,6 @@ void start_shell(void)
 {
   char *input = NULL;
   size_t len = 0;
-  char* command;
   char** args;
   int arg_count;
 
@@ -27,12 +26,10 @@ void start_shell(void)
 
     Parse(input);
 
-    command = GetParserCommand();
     args = GetParserArgs(&arg_count);
 
-    ExecuteCommand(command, args, arg_count);
+    ExecuteCommand(args[0], args, arg_count);
 
-    free(command);
     for (int i = 0; i < arg_count; i++)
     {
       free(args[i]);
