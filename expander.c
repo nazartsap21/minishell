@@ -6,6 +6,75 @@
 
 void ExpandVariables(char** args, int arg_count)
 {
+  for (int i = 0; i < arg_count; ++i)
+  {
+    char* p = args[i];
+    size_t len = strlen(p);
+
+    for (int j = 0; j < len; ++j)
+    {
+      if (p[j] == '$' && p[j+1] == '(')
+      {
+        char* end = strchr(p + j + 2, ')');
+        if (end)
+        {
+          size_t var_len = end - (p + j + 2);
+          char var[var_len + 1];
+          strncpy(var, p + j + 2, var_len);
+          var[var_len] = '\0';
+          char* var_value = getenv(var);
+          if (var_value)
+          {
+            size_t new_len = strlen(p) - (var_len + 3) + strlen(var_value);
+            char* new_arg = malloc(new_len + 1);
+            if (new_arg)
+            {
+              strncpy(new_arg, p, j);
+              new_arg[j] = '\0';
+              strcat(new_arg, var_value);
+              strcat(new_arg, end + 1);
+              free(args[i]);
+              args[i] = new_arg;
+              len = strlen(new_arg);
+              p = new_arg;
+              j += strlen(var_value) - 1;
+            }
+          }
+          else
+          {
+            // Variable not found, remove the $(VAR) part
+            size_t new_len = strlen(p) - (var_len + 3);
+            char* new_arg = malloc(new_len + 1);
+            if (new_arg)
+            {
+              strncpy(new_arg, p, j);
+              new_arg[j] = '\0';
+              strcat(new_arg, end + 1);
+              free(args[i]);
+              args[i] = new_arg;
+              len = strlen(new_arg);
+              p = new_arg;
+              j--;
+            }
+          }
+        }
+        else
+        {
+
+        }
+      }
+      else if (p[j] == '$')
+      {
+        
+      }
+    }
+
+    
+    
+  }
+
+
+
   if (args == NULL || arg_count <= 0)
     return;
 
