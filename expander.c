@@ -133,6 +133,25 @@ void ExpandVariables(char*** args_ptr, int* arg_count)
         }
         globfree(&glob_result);
       }
+      else if (p[j] == '~' && (j == 0) && (len == 1 || p[1] == '/'))
+      {
+        char* home = getenv("HOME");
+        if (home)
+        {
+          size_t new_len = strlen(p) - 1 + strlen(home);
+          char*  new_arg = malloc(new_len + 1);
+          if (new_arg)
+          {
+            strcpy(new_arg, home);
+            strcat(new_arg, p + 1);
+            free(args[i]);
+            args[i] = new_arg;
+            len     = strlen(new_arg);
+            p       = new_arg;
+            j       += strlen(home) - 1;
+          }
+        }
+      }
     }
   }
 }
