@@ -28,7 +28,7 @@ void start_shell(void)
     Parse(input);
 
     args = GetParserArgs(&arg_count);
-    ExpandVariables(args, arg_count);
+    ExpandVariables(&args, &arg_count);
 
     if (arg_count > 0)
     {
