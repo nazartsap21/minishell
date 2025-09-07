@@ -4,107 +4,98 @@
 #include <string.h>
 
 
-Parser_t parser = 
-{
-  .bitmap = 0,
-  .args = {NULL},
-  .arg_count = 0
-};
+Command_t* Parse(char* input) {
+  if (!input) return NULL;
 
+  Command_t* cmd = (Command_t*)calloc(1, sizeof(Command_t));
+  if (!cmd) exit(1);
 
-void Parse(char* input)
-{
-  if (input == NULL)
-    return;
-
-  parser.arg_count = 0;
-  parser.bitmap = 0;
+  cmd->argv = (char**)malloc(MAX_ARGS * sizeof(char*));
+  if (!cmd->argv) exit(1);
+  cmd->argc = 0;
 
   char* p = input;
+
   while (*p != '\0')
   {
     while (*p == ' ' || *p == '\t' || *p == '\n') p++;
-      if (*p == '\0') break;
+    if (*p == '\0') break;
 
-    char* start = p;
-    char* arg = NULL;
-    size_t len = 0;
-
-    if (*p == '"')
+    if (*p == '<')
     {
       p++;
-      start = p;
-      while (*p && *p != '"') p++;
-      len = p - start;
-      arg = (char*)malloc(len + 1);
-      if (arg)
+      while (*p == ' ' || *p == '\t') p++;
+      char* start = p;
+      while (*p && *p != ' ' && *p != '\t' && *p != '\n') p++;
+      size_t len = p - start;
+      if (len > 0) cmd->input_file = strndup(start, len);
+    }
+    else if (*p == '>')
+    {
+      p++;
+      int append = 0;
+      if (*p == '>') { append = 1; p++; }
+      while (*p == ' ' || *p == '\t') p++;
+      char* start = p;
+      while (*p && *p != ' ' && *p != '\t' && *p != '\n') p++;
+      size_t len = p - start;
+      if (len > 0) 
       {
-        strncpy(arg, start, len);
-        arg[len] = '\0';
+        cmd->output_file = strndup(start, len);
+        cmd->append = append;
       }
-      if (*p == '"') p++;
+    }
+    else if (*p == '|')
+    {
+      p++;
+      cmd->pipe_to = Parse(p);
+      break;
+    }
+    else if (*p == '&')
+    {
+      p++;
+      cmd->background = 1;
     }
     else
     {
-      start = p;
-      while (*p && *p != ' ' && *p != '\t' && *p != '\n' && *p != '"') p++;
-      len = p - start;
-      arg = (char*)malloc(len + 1);
-      if (arg)
+      char* start = p;
+      if (*p == '"')
       {
-        strncpy(arg, start, len);
-        arg[len] = '\0';
+        p++;
+        start = p;
+        while (*p && *p != '"') p++;
+        size_t len = p - start;
+        if (len > 0)
+        {
+          cmd->argv[cmd->argc++] = strndup(start, len);
+        }
+        if (*p == '"') p++;
+      }
+      else
+      {
+        while (*p && *p != ' ' && *p != '\t' && *p != '\n' &&
+               *p != '<' && *p != '>' && *p != '|' && *p != '&')
+          p++;
+        size_t len = p - start;
+        if (len > 0)
+        {
+          cmd->argv[cmd->argc++] = strndup(start, len);
+        }
       }
     }
-
-    if (arg && parser.arg_count < MAX_ARGS)
-    {
-      parser.args[parser.arg_count++] = arg;
-    }
-    else if (arg)
-    {
-      free(arg);
-    }
-
-    if (*p == '"') p++;
   }
-  if (parser.arg_count < MAX_ARGS)
-    parser.args[parser.arg_count] = NULL;
+
+  cmd->argv[cmd->argc] = NULL;
+  return cmd;
 }
 
-
-void CleanParser(void)
+void FreeCommand(Command_t* cmd)
 {
-  for (int i = 0; i < parser.arg_count; i++)
-  {
-    parser.args[i] = NULL;
-  }
-
-  parser.args[0] = NULL;
-  parser.arg_count = 0;
-  parser.bitmap = 0;
-}
-
-
-char** GetParserArgs(int* arg_count)
-{
-  if (arg_count == NULL)
-    return NULL;
-
-  *arg_count = parser.arg_count;
-  if (parser.arg_count == 0)
-    return NULL;
-
-  char** args_copy = malloc(sizeof(char*) * (parser.arg_count + 1));
-  if (!args_copy)
-    return NULL;
-
-  for (int i = 0; i < parser.arg_count; i++)
-  {
-    args_copy[i] = strdup(parser.args[i]);
-  }
-
-  args_copy[parser.arg_count] = NULL;
-
-  return args_copy;
+  if (!cmd) return;
+  for (int i = 0; i < cmd->argc; i++) free(cmd->argv[i]);
+  free(cmd->argv);
+  free(cmd->input_file);
+  free(cmd->output_file);
+  if (cmd->pipe_to) FreeCommand(cmd->pipe_to);
+  free(cmd);
 }

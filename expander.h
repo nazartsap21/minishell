@@ -1,6 +1,8 @@
 #ifndef EXPANDER_H
 #define EXPANDER_H
 
-void ExpandVariables(char*** args_ptr, int* arg_count);
+#include <stdint.h>
+
+void ExpandVariables(char*** args_ptr, uint8_t* arg_count);
 
 #endif // EXPANDER_H
