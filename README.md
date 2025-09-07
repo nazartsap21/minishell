@@ -61,7 +61,7 @@ MiniShell/
 
 2. Build the project using `make`:
    ```bash
-   make
+   make minishell
    ```
 
 3. The executable `minishell.exe` will be generated in the project directory.
