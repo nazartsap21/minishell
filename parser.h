@@ -8,7 +8,7 @@
 
 typedef struct Command_s
 {
-  char**             argv;
+  char**            argv;
   uint8_t           argc;
   char*             input_file;
   char*             output_file;

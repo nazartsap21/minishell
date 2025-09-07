@@ -9,8 +9,8 @@
 
 void start_shell(void)
 {
-  char *input = NULL;
-  size_t len = 0;
+  char*      input = NULL;
+  size_t     len   = 0;
   Command_t* cmd;
 
   while (1) 
@@ -33,18 +33,9 @@ void start_shell(void)
       current_cmd = current_cmd->pipe_to;
     }
 
-    current_cmd = cmd;
-    if (current_cmd && current_cmd->argc > 0)
+    if (cmd && cmd->argc > 0)
     {
-      if (current_cmd->input_file == NULL && current_cmd->output_file == NULL && current_cmd->pipe_to == NULL)
-      {
-        ExecuteCommand(current_cmd->argv[0], current_cmd->argv, current_cmd->argc);
-      }
-      else
-      {
-        // Handle redirection and piping here (not implemented yet)
-        printf("Redirection and piping not implemented yet.\n");
-      }
+      ExecuteCommand(cmd);
     }
 
     FreeCommand(cmd);

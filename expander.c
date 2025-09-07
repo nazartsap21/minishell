@@ -26,16 +26,20 @@ void ExpandVariables(char*** args_ptr, uint8_t* arg_count)
           strncpy(cmd, p + j + 2, cmd_len);
           cmd[cmd_len] = '\0';
 
-          FILE* fp     = popen(cmd, "r");
+          FILE* fp = popen(cmd, "r");
           if (fp)
           {
             char cmd_output[512] = "";
             size_t n = fread(cmd_output, 1, sizeof(cmd_output) - 1, fp);
             cmd_output[n] = '\0';
-            for (size_t k = n - 1; k >= 0 && (cmd_output[k] == '\n' || cmd_output[k] == '\r'); k--) {
+
+            for (size_t k = n - 1; k >= 0 && (cmd_output[k] == '\n' || cmd_output[k] == '\r'); k--)
+            {
               cmd_output[k] = '\0';
             }
+
             pclose(fp);
+
             size_t new_len = strlen(p) - (cmd_len + 3) + strlen(cmd_output);
             char*  new_arg = malloc(new_len + 1);
             if (new_arg)
@@ -66,10 +70,13 @@ void ExpandVariables(char*** args_ptr, uint8_t* arg_count)
           }
         }
 
-        if (var_len == 0) return;
+        if (var_len == 0) 
+          return;
 
         char* env_var = getenv(var_name);
-        if (!env_var) return;
+        if (!env_var) 
+          return;
+
         size_t new_len = strlen(p) - (var_len + 1) + strlen(env_var);
         if (env_var)
         {
