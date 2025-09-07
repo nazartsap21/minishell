@@ -154,7 +154,7 @@ shell> rm *.txt
 
 - Rebuild the project:
   ```bash
-  make
+  make minishell
   ```
 
 ---
