@@ -6,23 +6,24 @@
 #define MAX_ARGS 10
 
 
-typedef struct
+typedef struct Command_s
 {
-  uint8_t bitmap;
-  char*   args[MAX_ARGS];
-  int     arg_count;
-} Parser_t;
+  char**             argv;
+  uint8_t           argc;
+  char*             input_file;
+  char*             output_file;
+  int               append;
+  struct Command_s* pipe_to;
+  int               background;
+} Command_t;
 
 
 //------------------------------------------------------------------------------
-void Parse(char* input);
+Command_t* Parse(char* input);
 
 
 //------------------------------------------------------------------------------
-void CleanParser(void);
+void FreeCommand(Command_t* cmd);
 
-
-//------------------------------------------------------------------------------
-char** GetParserArgs(int* arg_count);
 
 #endif /* PARSER_H */

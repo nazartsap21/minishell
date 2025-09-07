@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <glob.h>
 
-void ExpandVariables(char*** args_ptr, int* arg_count)
+void ExpandVariables(char*** args_ptr, uint8_t* arg_count)
 {
   char** args = *args_ptr;
 

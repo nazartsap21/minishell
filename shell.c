@@ -11,8 +11,7 @@ void start_shell(void)
 {
   char *input = NULL;
   size_t len = 0;
-  char** args;
-  int arg_count;
+  Command_t* cmd;
 
   while (1) 
   {
@@ -25,21 +24,30 @@ void start_shell(void)
       break;
     }
 
-    Parse(input);
+    cmd = Parse(input);
 
-    args = GetParserArgs(&arg_count);
-    ExpandVariables(&args, &arg_count);
-
-    if (arg_count > 0)
+    Command_t* current_cmd = cmd;
+    while (current_cmd != NULL)
     {
-      ExecuteCommand(args[0], args, arg_count);
+      ExpandVariables(&current_cmd->argv, &current_cmd->argc);
+      current_cmd = current_cmd->pipe_to;
     }
 
-    for (int i = 0; i < arg_count; i++)
+    current_cmd = cmd;
+    if (current_cmd && current_cmd->argc > 0)
     {
-      free(args[i]);
+      if (current_cmd->input_file == NULL && current_cmd->output_file == NULL && current_cmd->pipe_to == NULL)
+      {
+        ExecuteCommand(current_cmd->argv[0], current_cmd->argv, current_cmd->argc);
+      }
+      else
+      {
+        // Handle redirection and piping here (not implemented yet)
+        printf("Redirection and piping not implemented yet.\n");
+      }
     }
-    free(args);
+
+    FreeCommand(cmd);
   }
 
   free(input);
